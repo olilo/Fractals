@@ -8,5 +8,17 @@
     <artifactId>Fractals</artifactId>
     <version>1.0</version>
 
-    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.1</version>
+                <configuration>
+                    <mainClass>de.olivelo.SpinningRectangles</mainClass>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>

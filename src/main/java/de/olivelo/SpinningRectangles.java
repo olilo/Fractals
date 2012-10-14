@@ -27,34 +27,21 @@ public class SpinningRectangles extends JPanel {
         new Thread(new Tick()).start();
     }
 
-    @Override
-    public void setMaximumSize(Dimension maximumSize) {
-        super.setMaximumSize(maximumSize);
-        recalculateRectangles();
-    }
-
-    @Override
-    public void setPreferredSize(Dimension preferredSize) {
-        super.setPreferredSize(preferredSize);
-        recalculateRectangles();
-    }
-
-    public void addClosingListener(Window window) {
-        window.addWindowListener(new ClosingListener());
+    public void addWindowListener(Window window) {
+        WindowListener listener = new WindowListener();
+        window.addWindowListener(listener);
     }
 
     private void recalculateRectangles() {
         System.out.println("Recalculated rectangles");
-        final double maxRectSize = Math.min(
-                getPreferredSize().getWidth(), getPreferredSize().getHeight())
-                / 4;
+        final double maxRectSize = Math.min(getWidth(), getHeight()) / 4;
         for (int i = 0; i < rectangles.length; i++) {
-            final double zoomFactor = Math.pow((double) (i + 1) / rectangles.length, 3);
+            final double zoomFactor = Math.pow((double) (i + 7) / (rectangles.length + 7), 3);
             System.out.println("zoom " + zoomFactor);
-            final double angle = Math.PI * Math.pow(i, 3) / Math.pow(rectangles.length, 3);
+            final double angle = Math.PI * Math.pow(i + 5, 3) / Math.pow(rectangles.length + 3, 3);
             System.out.println("angle " + angle);
-            final int xOffset = (int) ((1 + Math.cos(angle)) * maxRectSize);
-            final int yOffset = (int) ((1 + Math.sin(angle)) * maxRectSize);
+            final int xOffset = (int) (maxRectSize / 2 + (1 + Math.cos(angle)) * getWidth() / 3);
+            final int yOffset = (int) ((1 + Math.sin(angle)) * getHeight() / 3);
             final int width = (int) (maxRectSize * zoomFactor);
             final int height = (int) (maxRectSize * zoomFactor);
             System.out.println("rect values: " + xOffset + "/" + yOffset + " " + width + "x" + height);
@@ -67,13 +54,14 @@ public class SpinningRectangles extends JPanel {
         super.paintComponent(g);
         final Graphics2D tmp = (Graphics2D) g;
         int currentColorIndex = 0;
+        recalculateRectangles();
         for (Rectangle rectangle : this.rectangles) {
             if (rectangle == null) continue;
             final Graphics2D g2 = (Graphics2D) tmp.create(
                     rectangle.x - rectangle.width / 2, rectangle.y - rectangle.height / 2,
                     2 * rectangle.width, 2 * rectangle.height);
             final Rectangle drawnRectangle = new Rectangle(rectangle);
-            drawnRectangle.setLocation(- rectangle.width / 2, - rectangle.height / 2);
+            drawnRectangle.setLocation(-rectangle.width / 2, -rectangle.height / 2);
             g2.translate(rectangle.width, rectangle.height);
             g2.rotate(rotation);
             g2.setColor(RECTANGLE_COLORS[currentColorIndex]);
@@ -90,11 +78,10 @@ public class SpinningRectangles extends JPanel {
         frame.setPreferredSize(new Dimension(1000, 700));
         frame.setLayout(new FlowLayout());
 
-        SpinningRectangles panel = new SpinningRectangles(10);
-        panel.setPreferredSize(frame.getPreferredSize());
-        panel.addClosingListener(frame);
+        final SpinningRectangles panel = new SpinningRectangles(10);
+        panel.addWindowListener(frame);
 
-        frame.add(panel);
+        frame.setContentPane(panel);
         frame.pack();
         frame.setVisible(true);
     }
@@ -121,11 +108,13 @@ public class SpinningRectangles extends JPanel {
         }
     }
 
-    private class ClosingListener extends WindowAdapter {
+    private class WindowListener extends WindowAdapter {
 
         @Override
         public void windowClosing(WindowEvent e) {
             running = false;
         }
+
     }
+
 }
