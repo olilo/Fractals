@@ -1,13 +1,9 @@
 package de.olivelo;
 
-import sun.awt.WindowClosingListener;
-
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-import java.awt.event.WindowStateListener;
 
 /**
  * A panel full of spinning rectangles.
@@ -71,27 +67,15 @@ public class SpinningRectangles extends JPanel {
         super.paintComponent(g);
         final Graphics2D tmp = (Graphics2D) g;
         int currentColorIndex = 0;
-        //rotation = Math.PI;  // TODO remove after testing
         for (Rectangle rectangle : this.rectangles) {
             if (rectangle == null) continue;
             final Graphics2D g2 = (Graphics2D) tmp.create(
-                    rectangle.x, rectangle.y,
-                    rectangle.width + 1, rectangle.height + 1);
+                    rectangle.x - rectangle.width / 2, rectangle.y - rectangle.height / 2,
+                    2 * rectangle.width, 2 * rectangle.height);
             final Rectangle drawnRectangle = new Rectangle(rectangle);
-            final int newX;
-            final int newY;
-            final double relRotation = rotation % (2 * Math.PI);
-            System.out.println(relRotation);
-            if (relRotation > Math.PI / 2 && relRotation <= 3 * Math.PI / 2) {
-                newX = (int) (rectangle.width * Math.sin((relRotation - Math.PI / 4) * 2) / 2);
-                newY = (int) (rectangle.height * Math.sin((relRotation - Math.PI / 4) * 2) / 2);
-            } else {
-                newX = (int) Math.abs(rectangle.width * Math.sin(rotation) / 2);
-                newY = (int) Math.abs(rectangle.height * Math.sin(rotation) / 2);
-            }
-            System.out.println(newX + ", " + newY);
-            drawnRectangle.setLocation(0, 0);
-            g2.rotate(rotation, Math.abs(newX), Math.abs(newY));
+            drawnRectangle.setLocation(- rectangle.width / 2, - rectangle.height / 2);
+            g2.translate(rectangle.width, rectangle.height);
+            g2.rotate(rotation);
             g2.setColor(RECTANGLE_COLORS[currentColorIndex]);
             g2.fill(drawnRectangle);
             g2.setColor(Color.BLACK);
