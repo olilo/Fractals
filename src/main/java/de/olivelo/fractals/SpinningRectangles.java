@@ -1,4 +1,4 @@
-package de.olivelo;
+package de.olivelo.fractals;
 
 import javax.swing.*;
 import java.awt.*;
@@ -7,12 +7,10 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 
 /**
- * A panel full of spinning rectangles.
- * Every rectangle completes a whole rotation in 4 seconds.
+ * A panel full of spinning, swirling rectangles.
+ * Every rectangle completes a whole rotation in 4 seconds, if the speed is 1.0.
  *
- * User: oliver
- * Date: 14.10.12
- * Time: 01:34
+ * @author Oliver Lorenz
  */
 public class SpinningRectangles extends JPanel {
 
@@ -20,6 +18,7 @@ public class SpinningRectangles extends JPanel {
 
     private final int max;
     private final java.util.List<SpirallingRectangle> rectangles;
+    private double speed = 1;
     private boolean initialized = false;
     private boolean running = true;
 
@@ -32,6 +31,10 @@ public class SpinningRectangles extends JPanel {
         this.max = max;
         this.rectangles = new ArrayList<SpirallingRectangle>(max);
         new Thread(new Tick()).start();
+    }
+
+    public void setSpeed(final double speed) {
+        this.speed = speed;
     }
 
     public void addWindowListener(Window window) {
@@ -56,7 +59,11 @@ public class SpinningRectangles extends JPanel {
         } else {
             fillColorIndex = 0;
         }
-        rectangles.add(new SpirallingRectangle(13, 0, new Point(getWidth()/2, getHeight()/2), fillColorIndex));
+        final Point center = new Point(getWidth() / 2, getHeight() / 2);
+        final SpirallingRectangle rectangle = new SpirallingRectangle(13, 0, center, fillColorIndex);
+        rectangle.setRotationSpeed(2 * Math.random() - 1);
+        rectangle.setSpeed(speed);
+        rectangles.add(rectangle);
     }
 
     @Override
@@ -89,20 +96,6 @@ public class SpinningRectangles extends JPanel {
         }
     }
 
-    public static void main(String[] args) {
-        final JFrame frame = new JFrame("Spinning Rectangles");
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setPreferredSize(new Dimension(700, 700));
-        frame.setLayout(new FlowLayout());
-
-        final SpinningRectangles panel = new SpinningRectangles(50);
-        panel.addWindowListener(frame);
-
-        frame.setContentPane(panel);
-        frame.pack();
-        frame.setVisible(true);
-    }
-
     private class Tick implements Runnable {
 
         private long lastTick = System.nanoTime();
@@ -115,7 +108,7 @@ public class SpinningRectangles extends JPanel {
                 } catch (InterruptedException e) {
                     continue;
                 }
-                if (System.nanoTime() - lastTick > 1000000000 / FRAMERATE) {
+                if (System.nanoTime() - lastTick >= 1000000000 / FRAMERATE) {
                     lastTick = System.nanoTime();
                     repaint();
                 }

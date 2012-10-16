@@ -1,0 +1,5 @@
+You need to have maven and Java 1.6 installed.
+
+Then execute the following in the commandline:
+
+mvn clean compile exec:java

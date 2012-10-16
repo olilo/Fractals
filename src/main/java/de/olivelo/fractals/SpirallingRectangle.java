@@ -1,15 +1,13 @@
-package de.olivelo;
+package de.olivelo.fractals;
 
 import java.awt.*;
 
 /**
  * A spinning, moving rectangle that spirals out from a center.
  * The moving and spinning has to be controlled outside of this class
- * with the method stepForward(percentage).
+ * with the method {@link #stepForward(double)}.
  *
- * User: oliver
- * Date: 15.10.12
- * Time: 23:34
+ * @author Oliver Lorenz
  */
 public class SpirallingRectangle {
 
@@ -22,6 +20,9 @@ public class SpirallingRectangle {
     private double distanceToCenter;
     private double angleToCenter;
     private double shapeRotation;
+
+    private double rotationSpeed = -1;
+    private double speed = 1;
 
     private Point position;
     private Rectangle shape;
@@ -36,6 +37,14 @@ public class SpirallingRectangle {
         stepForward(0);
     }
 
+    public void setRotationSpeed(double rotationSpeed) {
+        this.rotationSpeed = rotationSpeed;
+    }
+
+    public void setSpeed(final double speed) {
+        this.speed = speed;
+    }
+
     /**
      * Advances this spiralling rectangle on its spiral.
      * The given percentage is the percentage of one full circle around the center.
@@ -43,8 +52,8 @@ public class SpirallingRectangle {
      * @param percentage the percentage of a full circle to advance
      */
     public void stepForward(double percentage) {
-        shapeRotation -= percentage * 2 * Math.PI;
-        angleToCenter += percentage * 2 * Math.PI;
+        shapeRotation += rotationSpeed * percentage * 2 * Math.PI;
+        angleToCenter += speed * percentage * 2 * Math.PI;
         distanceToCenter *= (1 + percentage);
 
         int x = center.x + (int) (Math.cos(angleToCenter) * distanceToCenter);
