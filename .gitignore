@@ -1,3 +1,7 @@
+# IntelliJ Idea system dependent config files
 .idea/misc.xml
 .idea/workspace.xml
 .idea/inspectionProfiles
+
+# maven output folder
+target
